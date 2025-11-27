@@ -1,0 +1,26 @@
+// ==================== MANUAL RELAY V0 ======================
+BLYNK_WRITE(V0) {
+  int v = param.asInt();
+
+  if (v == 1) {
+    digitalWrite(RELAY_PIN, HIGH);
+    Serial.println("Relay ON (manual)");
+  } else {
+    digitalWrite(RELAY_PIN, LOW);
+    Serial.println("Relay OFF (manual)");
+  }
+}
+
+// ==================== TIME INPUT V4 ========================
+BLYNK_WRITE(V4) {
+  int startSec = param[0].asInt();
+  int stopSec  = param[1].asInt();
+
+  startHour   = startSec / 3600;
+  startMinute = (startSec % 3600) / 60;
+  stopHour    = stopSec / 3600;
+  stopMinute  = (stopSec % 3600) / 60;
+
+  Serial.printf("Timer Set → Start %02d:%02d Stop %02d:%02d\n",
+                startHour, startMinute, stopHour, stopMinute);
+}
