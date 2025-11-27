@@ -1,0 +1,64 @@
+// ==================== NTP (WIB) ======================
+void initTime() {
+  configTime(7 * 3600, 0, "pool.ntp.org", "time.google.com");
+  delay(1500);
+}
+
+// ==================== GET LOCAL TIME ======================
+void getLocal(int &h, int &m) {
+  time_t now = time(nullptr);
+  struct tm* t = localtime(&now);
+  h = t->tm_hour;
+  m = t->tm_min;
+}
+
+// ==================== BACA SENSOR ACS712 ===================
+float readCurrentAC() {
+  int sampleCount = 400;
+  float sumSq = 0;
+
+  for (int i = 0; i < sampleCount; i++) {
+    int adc = analogRead(ACS_PIN);
+    float voltage = adc * (3.3 / 4095.0);
+    float offset = 3.3 / 2;
+    float diff = voltage - offset;
+    sumSq += diff * diff;
+  }
+
+  float Vrms = sqrt(sumSq / sampleCount);
+  float current = Vrms / sensitivity;
+
+  if (current < 0.03) current = 0;
+
+  return current;
+}
+
+// ==================== AUTO TIMER LOGIC ======================
+void checkTimerLogic() {
+  if (startHour < 0 || stopHour < 0) return;
+
+  int h, m;
+  getLocal(h, m);
+
+  bool relayState = digitalRead(RELAY_PIN);
+
+  if ((startHour < stopHour) ||
+      (startHour == stopHour && startMinute < stopMinute)) {
+
+    if ((h > startHour || (h == startHour && m >= startMinute)) &&
+        (h < stopHour || (h == stopHour && m < stopMinute))) {
+      relayState = HIGH;
+    } else {
+      relayState = LOW;
+    }
+  } else {
+    if ((h > startHour || (h == startHour && m >= startMinute)) ||
+        (h < stopHour || (h == stopHour && m < stopMinute))) {
+      relayState = HIGH;
+    } else {
+      relayState = LOW;
+    }
+  }
+
+  digitalWrite(RELAY_PIN, relayState);
+}
