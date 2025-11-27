@@ -1,0 +1,86 @@
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, LOW);
+
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  initTime();
+
+  Serial.println("System Ready...\n");
+}
+
+void loop() {
+  Blynk.run();
+
+  float current = 0;
+  float voltage = 0;
+  float power   = 0;
+
+  int relayState = digitalRead(RELAY_PIN);
+
+  if (relayState == HIGH) {
+    current = readCurrentAC();
+    voltage = 220.0;
+    power   = current * voltage;
+  } else {
+    current = 0;
+    voltage = 0;
+    power = 0;
+  }
+
+  Serial.printf("Relay: %d | Current: %.3f A | Power: %.1f W\n",
+                relayState, current, power);
+
+  Blynk.virtualWrite(V1, current);
+  Blynk.virtualWrite(V2, voltage);
+  Blynk.virtualWrite(V3, power);
+
+  checkTimerLogic();
+
+  delay(800);
+}
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, LOW);
+
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  initTime();
+
+  Serial.println("System Ready...\n");
+}
+
+void loop() {
+  Blynk.run();
+
+  float current = 0;
+  float voltage = 0;
+  float power   = 0;
+
+  int relayState = digitalRead(RELAY_PIN);
+
+  if (relayState == HIGH) {
+    current = readCurrentAC();
+    voltage = 220.0;
+    power   = current * voltage;
+  } else {
+    current = 0;
+    voltage = 0;
+    power = 0;
+  }
+
+  Serial.printf("Relay: %d | Current: %.3f A | Power: %.1f W\n",
+                relayState, current, power);
+
+  Blynk.virtualWrite(V1, current);
+  Blynk.virtualWrite(V2, voltage);
+  Blynk.virtualWrite(V3, power);
+
+  checkTimerLogic();
+
+  delay(800);
+}
